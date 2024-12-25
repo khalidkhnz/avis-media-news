@@ -1,6 +1,8 @@
 "use client";
 
-import QuillEditor from "@/components/QuillEditor";
+import dynamic from "next/dynamic";
+
+const QuillEditor = dynamic(() => import("@/components/QuillEditor"));
 
 export default function Home() {
   return (

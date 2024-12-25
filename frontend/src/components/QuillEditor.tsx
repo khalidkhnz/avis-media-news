@@ -6,15 +6,13 @@ import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.min.css";
 import hljs from "highlight.js";
 import Quill from "quill";
-import quillParser from "quilljs-parser";
+import { parseQuillDelta, ParsedQuillDelta, TextRun } from "quilljs-parser";
 
 const QuillEditor = () => {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
   const [quill, setQuill] = useState<Quill | null>(null);
-  const [preview, setPreview] = useState<
-    quillParser.ParsedQuillDelta | undefined
-  >();
+  const [preview, setPreview] = useState<ParsedQuillDelta | undefined>();
 
   useEffect(() => {
     if (editorRef.current && toolbarRef.current && !quill) {
@@ -37,7 +35,7 @@ const QuillEditor = () => {
     if (quill) {
       const handler = () => {
         const contents = quill.getContents();
-        const parsedQuill = quillParser.parseQuillDelta(contents);
+        const parsedQuill = parseQuillDelta(contents);
         setPreview(parsedQuill);
       };
       quill.on("text-change", handler);
@@ -48,7 +46,7 @@ const QuillEditor = () => {
   }, [quill]);
 
   return (
-    <div className="w-full">
+    <div style={{ width: "100%" }}>
       <div>
         <button onClick={() => console.log(quill?.getContents())}>LOG</button>
         <button onClick={() => console.log(preview)}>Preview</button>
@@ -111,7 +109,15 @@ const QuillEditor = () => {
         </pre>
       </div>
       <h2>CONSTRUCTED PREVIEW</h2>
-      <div className="text-black flex flex-wrap border-[2px] relative">
+      <div
+        style={{
+          color: "black",
+          display: "flex",
+          flexWrap: "wrap",
+          position: "relative",
+          border: "1px solid red",
+        }}
+      >
         {preview?.paragraphs?.map((paragraph, idx) => {
           const textRun = paragraph.textRuns as ParagraphType[];
           const attributes = paragraph?.attributes || {};
@@ -133,6 +139,11 @@ const QuillEditor = () => {
                     attributes?.header as keyof typeof headerStyles
                   ] || headerStyles[3],
                 textAlign: attributes?.align || "left",
+                ...(attributes.blockquote
+                  ? {
+                      padding: "5px",
+                    }
+                  : {}),
               }}
             >
               {parseQuillText(textRun)}
@@ -144,7 +155,7 @@ const QuillEditor = () => {
   );
 };
 
-type ParagraphType = quillParser.TextRun;
+type ParagraphType = TextRun;
 
 function parseQuillText(textRuns: ParagraphType[]) {
   return (
@@ -167,6 +178,7 @@ function parseQuillText(textRuns: ParagraphType[]) {
                   : "none",
                 color: attributes?.color || "inherit",
                 backgroundColor: attributes?.background || "transparent",
+                verticalAlign: attributes?.script || "baseline",
               }}
             >
               {text}
