@@ -10,7 +10,7 @@ import { Button } from "./ui/button";
 import { useExtendedEffect } from "@/hooks/useExtendedEffect";
 
 interface Props {
-  initialDelta: Delta | undefined;
+  initialDelta?: Delta | undefined;
   onSave: (delta: Delta) => void;
   onPreview: (delta: Delta) => void;
 }
@@ -68,11 +68,17 @@ const QuillEditor = ({ initialDelta, onPreview, onSave }: Props) => {
   }
 
   return (
-    <div className="p-2 w-screen">
-      <div className="flex gap-2 py-2  items-center justify-start">
-        <Button onClick={handleLog}>Log Content</Button>
-        <Button onClick={handlePreview}>Preview</Button>
-        <Button onClick={handleSave}>Save</Button>
+    <div className="w-full">
+      <div className="flex gap-2 p-2 items-center justify-end">
+        <Button variant={"ghost"} className="w-[120px]" onClick={handleLog}>
+          Log Content
+        </Button>
+        <Button variant={"ghost"} className="w-[120px]" onClick={handlePreview}>
+          Preview
+        </Button>
+        <Button className="w-[120px]" onClick={handleSave}>
+          Save
+        </Button>
       </div>
       <div id="toolbar-container" ref={toolbarRef}>
         <span className="ql-formats">

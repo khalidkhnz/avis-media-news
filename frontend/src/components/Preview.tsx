@@ -10,6 +10,7 @@ const Preview = ({ delta }: { delta?: Delta }) => {
     <div
       style={{
         color: "black",
+        padding: "10px",
         display: "flex",
         flexWrap: "wrap",
         position: "relative",
@@ -45,7 +46,7 @@ const Preview = ({ delta }: { delta?: Delta }) => {
               }}
             >
               {textRun && parseQuillText(textRun)}
-              {embed?.image && <Image src={embed.image} alt={`image-${idx}`} />}
+              {embed?.image && <img src={embed.image} alt={`image-${idx}`} />}
             </span>
           );
         })}

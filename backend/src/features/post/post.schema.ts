@@ -1,13 +1,15 @@
 import { Schema, model } from "mongoose";
 
-const richTextPostSchema = new Schema({
+const postSchema = new Schema({
   title: { type: String, required: true },
-  content: { type: String, required: true },
+  description: { type: String, required: true },
+  delta: { type: String, required: true },
   author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  tags: [{ type: String }], // Added field for tags
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-const RichTextPost = model("RichTextPost", richTextPostSchema);
+const PostSchema = model("posts", postSchema);
 
-export default RichTextPost;
+export default PostSchema;

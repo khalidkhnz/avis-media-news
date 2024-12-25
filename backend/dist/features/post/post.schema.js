@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const richTextPostSchema = new mongoose_1.Schema({
+const postSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
-    content: { type: String, required: true },
+    description: { type: String, required: true },
+    delta: { type: String, required: true },
     author: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    tags: [{ type: String }], // Added field for tags
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
 });
-const RichTextPost = (0, mongoose_1.model)("RichTextPost", richTextPostSchema);
-exports.default = RichTextPost;
+const PostSchema = (0, mongoose_1.model)("posts", postSchema);
+exports.default = PostSchema;
