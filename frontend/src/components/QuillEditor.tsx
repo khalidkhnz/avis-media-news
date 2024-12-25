@@ -5,14 +5,20 @@ import "quill/dist/quill.snow.css";
 import "katex/dist/katex.min.css";
 import "highlight.js/styles/atom-one-dark.min.css";
 import hljs from "highlight.js";
-import Quill from "quill";
-import { parseQuillDelta, ParsedQuillDelta, TextRun } from "quilljs-parser";
+import Quill, { Delta } from "quill";
+import { Button } from "./ui/button";
+import { useExtendedEffect } from "@/hooks/useExtendedEffect";
 
-const QuillEditor = () => {
+interface Props {
+  initialDelta: Delta | undefined;
+  onSave: (delta: Delta) => void;
+  onPreview: (delta: Delta) => void;
+}
+
+const QuillEditor = ({ initialDelta, onPreview, onSave }: Props) => {
   const editorRef = useRef<HTMLDivElement | null>(null);
   const toolbarRef = useRef<HTMLDivElement | null>(null);
   const [quill, setQuill] = useState<Quill | null>(null);
-  const [preview, setPreview] = useState<ParsedQuillDelta | undefined>();
 
   useEffect(() => {
     if (editorRef.current && toolbarRef.current && !quill) {
@@ -31,25 +37,42 @@ const QuillEditor = () => {
     }
   }, [quill]);
 
-  useEffect(() => {
+  useExtendedEffect({
+    mode: "DEFAULT",
+    exec(finish) {
+      if (initialDelta && quill) {
+        quill.setContents(initialDelta);
+        finish();
+      }
+    },
+    dependencies: [initialDelta, quill, { set: quill?.setContents }],
+  });
+
+  function handlePreview() {
     if (quill) {
-      const handler = () => {
-        const contents = quill.getContents();
-        const parsedQuill = parseQuillDelta(contents);
-        setPreview(parsedQuill);
-      };
-      quill.on("text-change", handler);
-      return () => {
-        quill.off("text-change", handler);
-      };
+      const contents = quill?.getContents();
+      if (contents) {
+        onPreview(contents);
+      }
     }
-  }, [quill]);
+  }
+
+  function handleSave() {
+    const content = quill?.getContents();
+    if (content) onSave(content);
+    else alert("No Content To Save");
+  }
+
+  function handleLog() {
+    console.log(quill?.getContents());
+  }
 
   return (
-    <div style={{ width: "100%" }}>
-      <div>
-        <button onClick={() => console.log(quill?.getContents())}>LOG</button>
-        <button onClick={() => console.log(preview)}>Preview</button>
+    <div className="p-2 w-screen">
+      <div className="flex gap-2 py-2  items-center justify-start">
+        <Button onClick={handleLog}>Log Content</Button>
+        <Button onClick={handlePreview}>Preview</Button>
+        <Button onClick={handleSave}>Save</Button>
       </div>
       <div id="toolbar-container" ref={toolbarRef}>
         <span className="ql-formats">
@@ -102,93 +125,8 @@ const QuillEditor = () => {
         id="editor"
         style={{ height: "100%", width: "100%", minHeight: "400px" }}
       ></div>
-      <div>
-        <h2>Preview</h2>
-        <pre>
-          <code>{JSON.stringify(preview, null, 2)}</code>
-        </pre>
-      </div>
-      <h2>CONSTRUCTED PREVIEW</h2>
-      <div
-        style={{
-          color: "black",
-          display: "flex",
-          flexWrap: "wrap",
-          position: "relative",
-          border: "1px solid red",
-        }}
-      >
-        {preview?.paragraphs?.map((paragraph, idx) => {
-          const textRun = paragraph.textRuns as ParagraphType[];
-          const attributes = paragraph?.attributes || {};
-
-          const headerStyles = {
-            1: "33px",
-            2: "25px",
-            3: "15px",
-          };
-
-          return (
-            <span
-              key={`paragraph-${idx}`}
-              style={{
-                width: "100%",
-                border: "1px solid red",
-                fontSize:
-                  headerStyles[
-                    attributes?.header as keyof typeof headerStyles
-                  ] || headerStyles[3],
-                textAlign: attributes?.align || "left",
-                ...(attributes.blockquote
-                  ? {
-                      padding: "5px",
-                    }
-                  : {}),
-              }}
-            >
-              {parseQuillText(textRun)}
-            </span>
-          );
-        })}
-      </div>
     </div>
   );
 };
-
-type ParagraphType = TextRun;
-
-function parseQuillText(textRuns: ParagraphType[]) {
-  return (
-    <React.Fragment>
-      {textRuns?.map((textRun, idx) => {
-        const text = textRun?.text;
-        const attributes = textRun?.attributes || {};
-
-        return (
-          <React.Fragment key={`text-run-${idx}-${text}`}>
-            <span
-              style={{
-                textWrap: "wrap",
-                fontWeight: attributes?.bold ? "bold" : "normal",
-                fontStyle: attributes?.italic ? "italic" : "normal",
-                textDecoration: attributes?.underline
-                  ? "underline"
-                  : attributes?.strike
-                  ? "line-through"
-                  : "none",
-                color: attributes?.color || "inherit",
-                backgroundColor: attributes?.background || "transparent",
-                verticalAlign: attributes?.script || "baseline",
-              }}
-            >
-              {text}
-            </span>
-          </React.Fragment>
-        );
-      })}
-      <br />
-    </React.Fragment>
-  );
-}
 
 export default QuillEditor;
