@@ -21,6 +21,7 @@ const http_1 = __importDefault(require("http"));
 const routes_1 = require("./routes");
 const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("./lib/config"));
+const cors_1 = __importDefault(require("cors"));
 class Server {
     constructor() {
         const { app, server } = this.setupServer();
@@ -48,6 +49,11 @@ class Server {
         app.use(express_1.default.json());
         app.use((0, hpp_1.default)());
         app.use((0, helmet_1.default)());
+        app.use((0, cors_1.default)({
+            allowedHeaders: ["Content-Type", "Authorization"],
+            methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+            origin: "*",
+        }));
     }
     setupRoutes(app) {
         app.use((0, routes_1.router)());

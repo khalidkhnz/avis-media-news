@@ -8,6 +8,7 @@ import http from "http";
 import { router } from "./routes";
 import mongoose from "mongoose";
 import config from "./lib/config";
+import cors from "cors";
 
 type HttpServer = http.Server<
   typeof http.IncomingMessage,
@@ -41,6 +42,13 @@ class Server {
     app.use(express.json());
     app.use(hpp());
     app.use(helmet());
+    app.use(
+      cors({
+        allowedHeaders: ["Content-Type", "Authorization"],
+        methods: ["GET", "PUT", "POST", "DELETE", "OPTIONS", "PATCH"],
+        origin: "*",
+      })
+    );
   }
 
   private setupRoutes(app: Application) {
