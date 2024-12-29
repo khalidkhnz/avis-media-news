@@ -8,11 +8,17 @@ import { useSearchParams } from "next/navigation";
 import { Delta } from "quill";
 import { useState } from "react";
 import { useFormik } from "formik";
+import { PostService } from "@/api/post.service";
 
 const QuillEditor = dynamic(() => import("@/components/QuillEditor"));
 
+type EditorType = "CREATE" | "UPDATE";
+
 export default function Home() {
-  const postId = useSearchParams()?.get("postId");
+  const searchParams = useSearchParams();
+  const postId = searchParams?.get("postId");
+  const type: EditorType = searchParams?.get("type") as EditorType;
+
   const [delta, setDelta] = useState<Delta | undefined>();
 
   const fk = useFormik({
@@ -21,8 +27,10 @@ export default function Home() {
       description: "",
       delta: "",
     },
-    onSubmit(values) {
-      console.log(values);
+    async onSubmit(values) {
+      console.log({ values });
+      const response = await PostService.createPost(values);
+      console.log({ response });
     },
   });
 
@@ -61,7 +69,9 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <div className="p-2">
-        <h1 className="text-2xl font-semibold">Create Post</h1>
+        <h1 className="text-2xl font-semibold">
+          {type === "CREATE" ? `Create Post` : `Update Post - ${postId}`}
+        </h1>
       </div>
       <div className="p-2 w-full gap-2 flex-col flex flex-wrap">
         <Input
