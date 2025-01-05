@@ -26,4 +26,4 @@ Content-Type: application/json
 
 ###
 GET http://localhost:4000/api/v1/current-user HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmJhYTI0MTE5MDUzMjA2NDljZjMwNyIsImlhdCI6MTczNTEwOTE1NiwiZXhwIjoxNzM1NzEzOTU2fQ.5HOyxqTtJpsy_IAJ8Cg8ylakywVSxJZfGxKiEZUjCi8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmMxMTA5YzdmODg2MDBjNzgyZjU3NCIsImlhdCI6MTczNjAxMjE4NSwiZXhwIjoxNzM2NjE2OTg1fQ.P1aJw8nvBZfr3Le7FyJ-u9HDNV4o54YbIjioH-qlrbA

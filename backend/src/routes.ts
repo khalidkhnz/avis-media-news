@@ -3,6 +3,8 @@ import authController from "./features/auth/auth.controller";
 import config from "./lib/config";
 import postController from "./features/post/post.controller";
 import authenticateToken from "./middlewares/authorization.middleware";
+import GenericController from "./services/generic.service";
+import PostSchema from "./features/post/post.schema";
 
 export function router(): Router {
   const r = express.Router();
@@ -17,6 +19,31 @@ export function router(): Router {
   r.post(`${config.API_VER_PREFIX}/register`, authController.register);
   r.post(`${config.API_VER_PREFIX}/login`, authController.login);
   r.get(`${config.API_VER_PREFIX}/current-user`, authController.currentUser);
+
+  new GenericController<any>({
+    name: "Posts",
+    model: PostSchema,
+    routeName: `${config.API_VER_PREFIX}/posts2`,
+    middlewares: {
+      CREATE: [authenticateToken],
+      UPDATE: [authenticateToken],
+      DELETE: [authenticateToken],
+    },
+    applyChecks: {
+      controllers: {
+        CREATE: {
+          checkIfAlreadyExists: ["title"],
+        },
+      },
+    },
+    modifyBody: {
+      CREATE(val: any, req) {
+        val.author = req.user?.id;
+        return val;
+      },
+    },
+    router: r,
+  });
 
   r.post(
     `${config.API_VER_PREFIX}/posts`,

@@ -4,11 +4,13 @@ import { CONFIG } from "@/lib/config";
 import React from "react";
 
 interface Props {
-  params: any;
+  params: Promise<{
+    postId: string;
+  }>;
 }
 
 const Page = async ({ params }: Props) => {
-  const postId = params.postId;
+  const postId = (await params).postId;
 
   const postData: { data: PostDoc; success: boolean } = await fetch(
     `${CONFIG.API_BASE_URL}/posts/${postId}`,
