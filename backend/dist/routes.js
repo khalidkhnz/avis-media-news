@@ -11,6 +11,7 @@ const post_controller_1 = __importDefault(require("./features/post/post.controll
 const authorization_middleware_1 = __importDefault(require("./middlewares/authorization.middleware"));
 const generic_service_1 = __importDefault(require("./services/generic.service"));
 const post_schema_1 = __importDefault(require("./features/post/post.schema"));
+const categories_schema_1 = __importDefault(require("./features/categories/categories.schema"));
 function router() {
     const r = express_1.default.Router();
     r.get("/", (req, res) => {
@@ -50,6 +51,31 @@ function router() {
                 var _a;
                 val.author = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
                 return { success: true, body: val };
+            },
+        },
+        router: r,
+    });
+    new generic_service_1.default({
+        name: "Categories",
+        logging: true,
+        model: categories_schema_1.default,
+        routeName: `${config_1.default.API_VER_PREFIX}/categories`,
+        middlewares: {
+            CREATE: [authorization_middleware_1.default],
+            UPDATE: [authorization_middleware_1.default],
+            DELETE: [authorization_middleware_1.default],
+        },
+        applyChecks: {
+            controllers: {
+                GET_ALL: {
+                    fieldsForSearchQuery: ["name", "description"],
+                },
+                CREATE: {
+                    checkIfAlreadyExists: ["name"],
+                },
+                UPDATE: {
+                    checkIfAlreadyExists: ["name"],
+                },
             },
         },
         router: r,

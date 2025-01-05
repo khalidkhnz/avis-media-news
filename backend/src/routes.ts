@@ -5,6 +5,7 @@ import postController from "./features/post/post.controller";
 import authenticateToken from "./middlewares/authorization.middleware";
 import GenericController from "./services/generic.service";
 import PostSchema from "./features/post/post.schema";
+import CategoriesSchema from "./features/categories/categories.schema";
 
 export function router(): Router {
   const r = express.Router();
@@ -47,6 +48,32 @@ export function router(): Router {
       CREATE(val: any, req) {
         val.author = req.user?.id;
         return { success: true, body: val };
+      },
+    },
+    router: r,
+  });
+
+  new GenericController<any>({
+    name: "Categories",
+    logging: true,
+    model: CategoriesSchema,
+    routeName: `${config.API_VER_PREFIX}/categories`,
+    middlewares: {
+      CREATE: [authenticateToken],
+      UPDATE: [authenticateToken],
+      DELETE: [authenticateToken],
+    },
+    applyChecks: {
+      controllers: {
+        GET_ALL: {
+          fieldsForSearchQuery: ["name", "description"],
+        },
+        CREATE: {
+          checkIfAlreadyExists: ["name"],
+        },
+        UPDATE: {
+          checkIfAlreadyExists: ["name"],
+        },
       },
     },
     router: r,

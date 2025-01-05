@@ -211,33 +211,68 @@ export default class GenericController<T extends Document> {
       return true;
     }
   }
-
   private initializeRoutes() {
-    console.log(`Init Generic Controller - ${this.name}`);
-    this.router.get(`${this.routeName}`, [
-      ...(this.middlewares.GET_ALL || []),
-      this.getAll,
-    ]);
-    this.router.get(`${this.routeName}/:${this.uniqueID("GET_BY_ID")}`, [
-      ...(this.middlewares.GET_BY_ID || []),
-      this.getById,
-    ]);
-    this.router.get(`${this.routeName}/find/one`, [
-      ...(this.middlewares.GET_ONE || []),
-      this.getOne,
-    ]);
-    this.router.post(`${this.routeName}`, [
-      ...(this.middlewares.CREATE || []),
-      this.create,
-    ]);
-    this.router.put(`${this.routeName}/:${this.uniqueID("UPDATE")}`, [
-      ...(this.middlewares.UPDATE || []),
-      this.update,
-    ]);
-    this.router.delete(`${this.routeName}/:${this.uniqueID("DELETE")}`, [
-      ...(this.middlewares.DELETE || []),
-      this.delete,
-    ]);
+    console.log(`\nInit Generic Controller - ${this.name}`);
+
+    const RouteNames = {
+      GET_ALL: `${this.routeName}`,
+      GET_BY_ID: `${this.routeName}/:${this.uniqueID("GET_BY_ID")}`,
+      GET_ONE: `${this.routeName}/find/one`,
+      CREATE: `${this.routeName}`,
+      UPDATE: `${this.routeName}/:${this.uniqueID("UPDATE")}`,
+      DELETE: `${this.routeName}/:${this.uniqueID("DELETE")}`,
+    };
+
+    const routes = [
+      {
+        path: RouteNames.GET_ALL,
+        method: "get",
+        middlewares: this.middlewares.GET_ALL,
+        controller: this.getAll,
+      },
+      {
+        path: RouteNames.GET_BY_ID,
+        method: "get",
+        middlewares: this.middlewares.GET_BY_ID,
+        controller: this.getById,
+      },
+      {
+        path: RouteNames.GET_ONE,
+        method: "get",
+        middlewares: this.middlewares.GET_ONE,
+        controller: this.getOne,
+      },
+      {
+        path: RouteNames.CREATE,
+        method: "post",
+        middlewares: this.middlewares.CREATE,
+        controller: this.create,
+      },
+      {
+        path: RouteNames.UPDATE,
+        method: "put",
+        middlewares: this.middlewares.UPDATE,
+        controller: this.update,
+      },
+      {
+        path: RouteNames.DELETE,
+        method: "delete",
+        middlewares: this.middlewares.DELETE,
+        controller: this.delete,
+      },
+    ];
+
+    routes.forEach((route) => {
+      console.log(
+        `\n\x1b[32m${route.method.toUpperCase()}\x1b[0m \n\x1b[36m${
+          route.path
+        }\x1b[0m`
+      );
+      (this.router[route.method as keyof Router] as Function)(route.path, [
+        ...(route.middlewares || []),
+        route.controller,
+      ]);
+    });
   }
 
   getAll = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
