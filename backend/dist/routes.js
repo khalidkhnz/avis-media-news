@@ -24,8 +24,9 @@ function router() {
     r.get(`${config_1.default.API_VER_PREFIX}/current-user`, auth_controller_1.default.currentUser);
     new generic_service_1.default({
         name: "Posts",
+        logging: true,
         model: post_schema_1.default,
-        routeName: `${config_1.default.API_VER_PREFIX}/posts2`,
+        routeName: `${config_1.default.API_VER_PREFIX}/posts-v2`,
         middlewares: {
             CREATE: [authorization_middleware_1.default],
             UPDATE: [authorization_middleware_1.default],
@@ -33,6 +34,9 @@ function router() {
         },
         applyChecks: {
             controllers: {
+                GET_ALL: {
+                    fieldsForSearchQuery: ["title", "description"],
+                },
                 CREATE: {
                     checkIfAlreadyExists: ["title"],
                 },

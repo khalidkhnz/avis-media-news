@@ -22,8 +22,9 @@ export function router(): Router {
 
   new GenericController<any>({
     name: "Posts",
+    logging: true,
     model: PostSchema,
-    routeName: `${config.API_VER_PREFIX}/posts2`,
+    routeName: `${config.API_VER_PREFIX}/posts-v2`,
     middlewares: {
       CREATE: [authenticateToken],
       UPDATE: [authenticateToken],
@@ -31,6 +32,9 @@ export function router(): Router {
     },
     applyChecks: {
       controllers: {
+        GET_ALL: {
+          fieldsForSearchQuery: ["title", "description"],
+        },
         CREATE: {
           checkIfAlreadyExists: ["title"],
         },

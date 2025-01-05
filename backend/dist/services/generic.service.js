@@ -8,6 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const handleServerError = (res, error) => {
     res
@@ -15,19 +26,33 @@ const handleServerError = (res, error) => {
         .json({ success: false, error: error.message || "Server Error" });
 };
 class GenericController {
-    constructor({ name, model, routeName, middlewares, router, modifyBody, modifyQuery, applyChecks, }) {
+    constructor({ name, logging, model, routeName, middlewares, router, modifyBody, modifyQuery, applyChecks, }) {
         this.getAll = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c, _d, _e, _f, _g, _h, _j;
             try {
-                const { limit = 10, page = 1 } = req.query;
-                const skip = (Number(page) - 1) * Number(limit);
-                const query = this.modifyQuery.GET_ALL
+                this.logReq(req);
+                let _k = this.modifyQuery.GET_ALL
                     ? this.modifyQuery.GET_ALL(req.query, req, res)
-                    : req.query;
+                    : req.query, { page, limit, search = "" } = _k, QUERIES = __rest(_k, ["page", "limit", "search"]);
+                const LIMIT = Math.max(1, parseInt(`${limit}`, 10) || 10);
+                const PAGE = Math.max(1, parseInt(`${page}`, 10) || 1);
+                const SKIP = (PAGE - 1) * LIMIT;
+                const FieldsForSearch = ((_c = (_b = (_a = this.applyChecks) === null || _a === void 0 ? void 0 : _a.controllers) === null || _b === void 0 ? void 0 : _b.GET_ALL) === null || _c === void 0 ? void 0 : _c.fieldsForSearchQuery) || [];
+                const SearchQuery = (FieldsForSearch || []).map((f) => ({
+                    [f]: { $regex: search, $options: "i" },
+                }));
+                const ModifiedFindQuery = ((_f = (_e = (_d = this.applyChecks) === null || _d === void 0 ? void 0 : _d.controllers) === null || _e === void 0 ? void 0 : _e.GET_ALL) === null || _f === void 0 ? void 0 : _f.modifyFindQuery)
+                    ? (_j = (_h = (_g = this.applyChecks) === null || _g === void 0 ? void 0 : _g.controllers) === null || _h === void 0 ? void 0 : _h.GET_ALL) === null || _j === void 0 ? void 0 : _j.modifyFindQuery(QUERIES, req, res)
+                    : QUERIES;
                 const items = yield this.model
-                    .find(query)
-                    .skip(skip)
-                    .limit(Number(limit));
-                const total = yield this.model.countDocuments(query);
+                    .find(ModifiedFindQuery)
+                    .or(SearchQuery)
+                    .skip(SKIP)
+                    .limit(LIMIT);
+                const total = yield this.model
+                    .find(ModifiedFindQuery)
+                    .or(SearchQuery)
+                    .countDocuments();
                 res.status(200).json({
                     success: true,
                     data: items,
@@ -40,6 +65,7 @@ class GenericController {
         });
         this.getById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                this.logReq(req);
                 const params = this.modifyQuery.GET_BY_ID
                     ? this.modifyQuery.GET_BY_ID(req.params, req, res)
                     : req.params;
@@ -64,6 +90,7 @@ class GenericController {
         });
         this.getOne = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                this.logReq(req);
                 const query = this.modifyQuery.GET_ONE
                     ? this.modifyQuery.GET_ONE(req.query, req, res)
                     : req.query;
@@ -81,6 +108,7 @@ class GenericController {
         });
         this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                this.logReq(req);
                 const body = this.modifyBody.CREATE
                     ? this.modifyBody.CREATE(req.body, req, res)
                     : req.body;
@@ -95,6 +123,7 @@ class GenericController {
         });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                this.logReq(req);
                 const body = this.modifyBody.UPDATE
                     ? this.modifyBody.UPDATE(req.body, req, res)
                     : req.body;
@@ -118,6 +147,7 @@ class GenericController {
         });
         this.delete = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
+                this.logReq(req);
                 const item = yield this.model.findOneAndDelete({
                     [this.uniqueID("DELETE")]: req.params[this.uniqueID("DELETE")],
                 });
@@ -132,6 +162,7 @@ class GenericController {
                 handleServerError(res, error);
             }
         });
+        this.logging = !!logging;
         this.name = name;
         this.applyChecks = applyChecks;
         this.modifyQuery = modifyQuery || {
@@ -158,6 +189,10 @@ class GenericController {
             DELETE: [],
         };
         this.initializeRoutes();
+    }
+    logReq(req) {
+        if (this.logging)
+            console.log(`\x1b[34m[${new Date().toISOString()}]\x1b[0m ${req.ip} - "\x1b[32m${req.method}\x1b[0m \x1b[36m${req.originalUrl}\x1b[0m" "\x1b[35m${req.get("User-Agent")}\x1b[0m"`);
     }
     uniqueID(controllerName) {
         var _a, _b, _c;

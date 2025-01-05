@@ -33,25 +33,48 @@ type IControllerNames =
   | "UPDATE"
   | "DELETE";
 
-interface IControllerLevelChecks {
+interface IGetAllChecks {
+  changeUniqueField?: string;
+  fieldsForSearchQuery?: string[];
+  modifyFindQuery?: (
+    queries: Record<string, any>,
+    req: AuthenticatedRequest,
+    res: Response
+  ) => Record<string, any>;
+}
+interface IGetByIdChecks {
+  changeUniqueField?: string;
+}
+interface IGetOneChecks {
+  changeUniqueField?: string;
+}
+interface ICreateChecks {
   changeUniqueField?: string;
   checkIfAlreadyExists?: string[];
+}
+interface IUpdateChecks {
+  changeUniqueField?: string;
+  checkIfAlreadyExists?: string[];
+}
+interface IDeleteChecks {
+  changeUniqueField?: string;
 }
 
 interface IApplyChecks {
   changeUniqueField?: string;
   controllers?: {
-    GET_ALL?: IControllerLevelChecks;
-    GET_BY_ID?: IControllerLevelChecks;
-    GET_ONE?: IControllerLevelChecks;
-    CREATE?: IControllerLevelChecks;
-    UPDATE?: IControllerLevelChecks;
-    DELETE?: IControllerLevelChecks;
+    GET_ALL?: IGetAllChecks;
+    GET_BY_ID?: IGetByIdChecks;
+    GET_ONE?: IGetOneChecks;
+    CREATE?: ICreateChecks;
+    UPDATE?: IUpdateChecks;
+    DELETE?: IDeleteChecks;
   };
 }
 
 interface IConstructer<T> {
   name: string;
+  logging?: boolean;
   model: Model<T>;
   middlewares?: IMiddlewares;
   router: Router;
@@ -69,6 +92,7 @@ const handleServerError = (res: Response, error: any) => {
 
 export default class GenericController<T extends Document> {
   private name: string;
+  private logging: boolean;
   private model: Model<T>;
   private router: Router;
   private routeName: string;
@@ -79,6 +103,7 @@ export default class GenericController<T extends Document> {
 
   constructor({
     name,
+    logging,
     model,
     routeName,
     middlewares,
@@ -87,6 +112,7 @@ export default class GenericController<T extends Document> {
     modifyQuery,
     applyChecks,
   }: IConstructer<T>) {
+    this.logging = !!logging;
     this.name = name;
     this.applyChecks = applyChecks;
     this.modifyQuery = modifyQuery || {
@@ -115,6 +141,17 @@ export default class GenericController<T extends Document> {
     this.initializeRoutes();
   }
 
+  private logReq(req: AuthenticatedRequest) {
+    if (this.logging)
+      console.log(
+        `\x1b[34m[${new Date().toISOString()}]\x1b[0m ${req.ip} - "\x1b[32m${
+          req.method
+        }\x1b[0m \x1b[36m${req.originalUrl}\x1b[0m" "\x1b[35m${req.get(
+          "User-Agent"
+        )}\x1b[0m"`
+      );
+  }
+
   private uniqueID(controllerName: IControllerNames): string {
     const controller = this.applyChecks?.controllers?.[controllerName];
     return (
@@ -125,7 +162,7 @@ export default class GenericController<T extends Document> {
   }
 
   private async handleCheckForAlreadyExistingData(
-    controllerName: IControllerNames,
+    controllerName: "UPDATE" | "CREATE",
     body: any,
     model: Model<T>,
     res: Response
@@ -193,17 +230,48 @@ export default class GenericController<T extends Document> {
 
   getAll = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
-      const { limit = 10, page = 1 } = req.query;
-      const skip = (Number(page) - 1) * Number(limit);
-      const query: any = this.modifyQuery.GET_ALL
+      this.logReq(req);
+      let {
+        page,
+        limit,
+        search = "",
+        ...QUERIES
+      } = this.modifyQuery.GET_ALL
         ? this.modifyQuery.GET_ALL(req.query, req, res)
         : req.query;
 
+      const LIMIT = Math.max(1, parseInt(`${limit}`, 10) || 10);
+      const PAGE = Math.max(1, parseInt(`${page}`, 10) || 1);
+      const SKIP = (PAGE - 1) * LIMIT;
+
+      const FieldsForSearch =
+        this.applyChecks?.controllers?.GET_ALL?.fieldsForSearchQuery || [];
+
+      const SearchQuery = (FieldsForSearch || []).map(
+        (f: string) =>
+          ({
+            [f]: { $regex: search, $options: "i" },
+          } as Record<string, any>)
+      );
+
+      const ModifiedFindQuery = this.applyChecks?.controllers?.GET_ALL
+        ?.modifyFindQuery
+        ? this.applyChecks?.controllers?.GET_ALL?.modifyFindQuery(
+            QUERIES as Record<string, any>,
+            req,
+            res
+          )
+        : QUERIES;
+
       const items = await this.model
-        .find(query)
-        .skip(skip)
-        .limit(Number(limit));
-      const total = await this.model.countDocuments(query);
+        .find(ModifiedFindQuery)
+        .or(SearchQuery)
+        .skip(SKIP)
+        .limit(LIMIT);
+      const total = await this.model
+        .find(ModifiedFindQuery)
+        .or(SearchQuery)
+        .countDocuments();
 
       res.status(200).json({
         success: true,
@@ -217,6 +285,7 @@ export default class GenericController<T extends Document> {
 
   getById = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
+      this.logReq(req);
       const params = this.modifyQuery.GET_BY_ID
         ? this.modifyQuery.GET_BY_ID(req.params, req, res)
         : req.params;
@@ -241,6 +310,7 @@ export default class GenericController<T extends Document> {
 
   getOne = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
+      this.logReq(req);
       const query: any = this.modifyQuery.GET_ONE
         ? this.modifyQuery.GET_ONE(req.query, req, res)
         : req.query;
@@ -258,6 +328,7 @@ export default class GenericController<T extends Document> {
 
   create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
+      this.logReq(req);
       const body = this.modifyBody.CREATE
         ? this.modifyBody.CREATE(req.body, req, res)
         : req.body;
@@ -280,6 +351,7 @@ export default class GenericController<T extends Document> {
 
   update = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
+      this.logReq(req);
       const body = this.modifyBody.UPDATE
         ? this.modifyBody.UPDATE(req.body, req, res)
         : req.body;
@@ -315,6 +387,7 @@ export default class GenericController<T extends Document> {
 
   delete = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
+      this.logReq(req);
       const item = await this.model.findOneAndDelete({
         [this.uniqueID("DELETE")]: req.params[this.uniqueID("DELETE")],
       } as Record<string, any>);
