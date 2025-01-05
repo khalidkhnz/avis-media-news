@@ -11,18 +11,30 @@ interface IMiddlewares {
   DELETE?: any[];
 }
 
+type IModifyBodyType = <T>(
+  val: T,
+  req: AuthenticatedRequest,
+  res: Response
+) => { body: T; success: boolean };
+
+type IModifyQueriesType = <T>(
+  val: T,
+  req: AuthenticatedRequest,
+  res: Response
+) => { queries: T; success: boolean };
+
 interface IModifyBody {
-  GET_ALL?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  GET_BY_ID?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  GET_ONE?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  CREATE?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  UPDATE?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
+  GET_ALL?: IModifyBodyType;
+  GET_BY_ID?: IModifyBodyType;
+  GET_ONE?: IModifyBodyType;
+  CREATE?: IModifyBodyType;
+  UPDATE?: IModifyBodyType;
 }
 
 interface IModifyQuery {
-  GET_ALL?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  GET_BY_ID?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
-  GET_ONE?: <T>(val: T, req: AuthenticatedRequest, res: Response) => T;
+  GET_ALL?: IModifyQueriesType;
+  GET_BY_ID?: IModifyQueriesType;
+  GET_ONE?: IModifyQueriesType;
 }
 
 type IControllerNames =
@@ -116,16 +128,16 @@ export default class GenericController<T extends Document> {
     this.name = name;
     this.applyChecks = applyChecks;
     this.modifyQuery = modifyQuery || {
-      GET_BY_ID: (v) => v,
-      GET_ALL: (v) => v,
-      GET_ONE: (v) => v,
+      GET_BY_ID: (v) => ({ success: true, queries: v }),
+      GET_ALL: (v) => ({ success: true, queries: v }),
+      GET_ONE: (v) => ({ success: true, queries: v }),
     };
     this.modifyBody = modifyBody || {
-      CREATE: (v) => v,
-      UPDATE: (v) => v,
-      GET_BY_ID: (v) => v,
-      GET_ALL: (v) => v,
-      GET_ONE: (v) => v,
+      CREATE: (v) => ({ success: true, body: v }),
+      UPDATE: (v) => ({ success: true, body: v }),
+      GET_BY_ID: (v) => ({ success: true, body: v }),
+      GET_ALL: (v) => ({ success: true, body: v }),
+      GET_ONE: (v) => ({ success: true, body: v }),
     };
     this.model = model;
     this.router = router;
@@ -232,13 +244,16 @@ export default class GenericController<T extends Document> {
     try {
       this.logReq(req);
       let {
-        page,
-        limit,
-        search = "",
-        ...QUERIES
+        queries: { page, limit, search = "", ...QUERIES },
+        success,
       } = this.modifyQuery.GET_ALL
         ? this.modifyQuery.GET_ALL(req.query, req, res)
-        : req.query;
+        : { success: true, queries: req.query };
+
+      if (!success) {
+        res.status(400).json({ success: false, message: "Invalid Queries" });
+        return;
+      }
 
       const LIMIT = Math.max(1, parseInt(`${limit}`, 10) || 10);
       const PAGE = Math.max(1, parseInt(`${page}`, 10) || 1);
@@ -286,9 +301,16 @@ export default class GenericController<T extends Document> {
   getById = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
       this.logReq(req);
-      const params = this.modifyQuery.GET_BY_ID
+
+      const { queries: params, success } = this.modifyQuery.GET_BY_ID
         ? this.modifyQuery.GET_BY_ID(req.params, req, res)
-        : req.params;
+        : { queries: req.params, success: true };
+
+      if (!success) {
+        res.status(400).json({ success: false, message: "Invalid Params" });
+        return;
+      }
+
       if (!params[this.uniqueID("GET_BY_ID")]) {
         return res
           .status(400)
@@ -329,9 +351,14 @@ export default class GenericController<T extends Document> {
   create = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       this.logReq(req);
-      const body = this.modifyBody.CREATE
+      const { success, body } = this.modifyBody.CREATE
         ? this.modifyBody.CREATE(req.body, req, res)
-        : req.body;
+        : { success: true, body: req.body };
+
+      if (!success) {
+        res.status(400).json({ success: false, message: "Invalid Body" });
+        return;
+      }
 
       if (
         await this.handleCheckForAlreadyExistingData(
@@ -352,9 +379,14 @@ export default class GenericController<T extends Document> {
   update = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
     try {
       this.logReq(req);
-      const body = this.modifyBody.UPDATE
+      const { body, success } = this.modifyBody.UPDATE
         ? this.modifyBody.UPDATE(req.body, req, res)
-        : req.body;
+        : { success: true, body: req.body };
+
+      if (!success) {
+        res.status(400).json({ success: false, message: "Invalid Body" });
+        return;
+      }
 
       if (
         await this.handleCheckForAlreadyExistingData(

@@ -33,7 +33,11 @@ class GenericController {
                 this.logReq(req);
                 let _k = this.modifyQuery.GET_ALL
                     ? this.modifyQuery.GET_ALL(req.query, req, res)
-                    : req.query, { page, limit, search = "" } = _k, QUERIES = __rest(_k, ["page", "limit", "search"]);
+                    : { success: true, queries: req.query }, _l = _k.queries, { page, limit, search = "" } = _l, QUERIES = __rest(_l, ["page", "limit", "search"]), { success } = _k;
+                if (!success) {
+                    res.status(400).json({ success: false, message: "Invalid Queries" });
+                    return;
+                }
                 const LIMIT = Math.max(1, parseInt(`${limit}`, 10) || 10);
                 const PAGE = Math.max(1, parseInt(`${page}`, 10) || 1);
                 const SKIP = (PAGE - 1) * LIMIT;
@@ -66,9 +70,13 @@ class GenericController {
         this.getById = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 this.logReq(req);
-                const params = this.modifyQuery.GET_BY_ID
+                const { queries: params, success } = this.modifyQuery.GET_BY_ID
                     ? this.modifyQuery.GET_BY_ID(req.params, req, res)
-                    : req.params;
+                    : { queries: req.params, success: true };
+                if (!success) {
+                    res.status(400).json({ success: false, message: "Invalid Params" });
+                    return;
+                }
                 if (!params[this.uniqueID("GET_BY_ID")]) {
                     return res
                         .status(400)
@@ -109,9 +117,13 @@ class GenericController {
         this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 this.logReq(req);
-                const body = this.modifyBody.CREATE
+                const { success, body } = this.modifyBody.CREATE
                     ? this.modifyBody.CREATE(req.body, req, res)
-                    : req.body;
+                    : { success: true, body: req.body };
+                if (!success) {
+                    res.status(400).json({ success: false, message: "Invalid Body" });
+                    return;
+                }
                 if (yield this.handleCheckForAlreadyExistingData("CREATE", body, this.model, res))
                     return;
                 const newItem = yield this.model.create(body);
@@ -124,9 +136,13 @@ class GenericController {
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 this.logReq(req);
-                const body = this.modifyBody.UPDATE
+                const { body, success } = this.modifyBody.UPDATE
                     ? this.modifyBody.UPDATE(req.body, req, res)
-                    : req.body;
+                    : { success: true, body: req.body };
+                if (!success) {
+                    res.status(400).json({ success: false, message: "Invalid Body" });
+                    return;
+                }
                 if (yield this.handleCheckForAlreadyExistingData("UPDATE", body, this.model, res))
                     return;
                 const updatedItem = yield this.model.findOneAndUpdate({
@@ -166,16 +182,16 @@ class GenericController {
         this.name = name;
         this.applyChecks = applyChecks;
         this.modifyQuery = modifyQuery || {
-            GET_BY_ID: (v) => v,
-            GET_ALL: (v) => v,
-            GET_ONE: (v) => v,
+            GET_BY_ID: (v) => ({ success: true, queries: v }),
+            GET_ALL: (v) => ({ success: true, queries: v }),
+            GET_ONE: (v) => ({ success: true, queries: v }),
         };
         this.modifyBody = modifyBody || {
-            CREATE: (v) => v,
-            UPDATE: (v) => v,
-            GET_BY_ID: (v) => v,
-            GET_ALL: (v) => v,
-            GET_ONE: (v) => v,
+            CREATE: (v) => ({ success: true, body: v }),
+            UPDATE: (v) => ({ success: true, body: v }),
+            GET_BY_ID: (v) => ({ success: true, body: v }),
+            GET_ALL: (v) => ({ success: true, body: v }),
+            GET_ONE: (v) => ({ success: true, body: v }),
         };
         this.model = model;
         this.router = router;

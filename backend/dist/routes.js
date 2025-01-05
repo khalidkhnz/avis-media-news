@@ -40,13 +40,16 @@ function router() {
                 CREATE: {
                     checkIfAlreadyExists: ["title"],
                 },
+                UPDATE: {
+                    checkIfAlreadyExists: ["title"],
+                },
             },
         },
         modifyBody: {
             CREATE(val, req) {
                 var _a;
                 val.author = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-                return val;
+                return { success: true, body: val };
             },
         },
         router: r,

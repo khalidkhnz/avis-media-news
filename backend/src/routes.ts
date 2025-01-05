@@ -38,12 +38,15 @@ export function router(): Router {
         CREATE: {
           checkIfAlreadyExists: ["title"],
         },
+        UPDATE: {
+          checkIfAlreadyExists: ["title"],
+        },
       },
     },
     modifyBody: {
       CREATE(val: any, req) {
         val.author = req.user?.id;
-        return val;
+        return { success: true, body: val };
       },
     },
     router: r,
