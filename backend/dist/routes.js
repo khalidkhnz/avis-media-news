@@ -26,6 +26,7 @@ function router() {
     new generic_service_1.default({
         name: "Posts",
         logging: true,
+        router: r,
         model: post_schema_1.default,
         routeName: `${config_1.default.API_VER_PREFIX}/posts-v2`,
         middlewares: {
@@ -53,11 +54,11 @@ function router() {
                 return { success: true, body: val };
             },
         },
-        router: r,
     });
     new generic_service_1.default({
         name: "Categories",
         logging: true,
+        router: r,
         model: categories_schema_1.default,
         routeName: `${config_1.default.API_VER_PREFIX}/categories`,
         middlewares: {
@@ -78,7 +79,6 @@ function router() {
                 },
             },
         },
-        router: r,
     });
     r.post(`${config_1.default.API_VER_PREFIX}/posts`, authorization_middleware_1.default, (req, res, next) => post_controller_1.default.create(req, res).catch(next));
     r.put(`${config_1.default.API_VER_PREFIX}/posts/:id`, authorization_middleware_1.default, (req, res, next) => post_controller_1.default.update(req, res).catch(next));

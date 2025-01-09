@@ -24,6 +24,7 @@ export function router(): Router {
   new GenericController<any>({
     name: "Posts",
     logging: true,
+    router: r,
     model: PostSchema,
     routeName: `${config.API_VER_PREFIX}/posts-v2`,
     middlewares: {
@@ -50,12 +51,12 @@ export function router(): Router {
         return { success: true, body: val };
       },
     },
-    router: r,
   });
 
   new GenericController<any>({
     name: "Categories",
     logging: true,
+    router: r,
     model: CategoriesSchema,
     routeName: `${config.API_VER_PREFIX}/categories`,
     middlewares: {
@@ -76,7 +77,6 @@ export function router(): Router {
         },
       },
     },
-    router: r,
   });
 
   r.post(
