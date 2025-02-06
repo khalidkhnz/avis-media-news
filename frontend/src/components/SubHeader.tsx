@@ -3,7 +3,7 @@ import React from "react";
 
 const SubHeader = () => {
   return (
-    <div className="shadow-sm hide_scrollbar z-50 bg-white px-4 overflow-auto gap-10 flex items-center justify-around w-[99%] mx-auto rounded-b-lg sticky top-0 h-[40px] border-[2px]">
+    <div className="sticky shadow-sm hide_scrollbar z-50 bg-white px-4 overflow-auto gap-10 flex items-center justify-around w-[99%] mx-auto rounded-b-lg top-0 h-[40px] border-[2px]">
       {Constants.subHeaders?.map((subHeader, idx) => {
         return (
           <div

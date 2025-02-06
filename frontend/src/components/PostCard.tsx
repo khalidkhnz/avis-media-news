@@ -4,8 +4,11 @@ import Image from "next/image";
 interface IPostCardProps {
   className?: string;
   topImage?: string;
+  topImageClassName?: string;
   rightImage?: string;
+  rightImageClassName?: string;
   leftImage?: string;
+  leftImageClassName?: string;
   title?: string;
   content?: string;
   timestamp?: string;
@@ -14,8 +17,11 @@ interface IPostCardProps {
 export default function PostCard({
   className,
   topImage,
+  topImageClassName,
   rightImage,
+  rightImageClassName,
   leftImage,
+  leftImageClassName,
   title = "WORLD NEWS",
   content = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
           sapiente? Lorem ipsum, dolor sit amet consectetur adipisicing elit.
@@ -31,13 +37,23 @@ export default function PostCard({
     >
       <h4 className="font-bold hover:underline text-[#2ea4d3]">{title}</h4>
       {topImage && (
-        <div className="flex justify-center items-center w-full h-[200px] relative">
+        <div
+          className={cn(
+            "flex justify-center items-center w-full h-[200px] relative",
+            topImageClassName
+          )}
+        >
           <Image src={topImage} className="object-cover" alt={title} fill />
         </div>
       )}
       <div className="flex justify-center items-center w-full gap-2">
         {leftImage && (
-          <div className="flex justify-center items-center min-w-[150px] min-h-[110px] relative">
+          <div
+            className={cn(
+              "flex justify-center items-center min-w-[150px] min-h-[110px] relative",
+              leftImageClassName
+            )}
+          >
             <Image
               src={leftImage}
               className="object-contain"
@@ -54,7 +70,12 @@ export default function PostCard({
           {content}
         </p>
         {rightImage && (
-          <div className="flex justify-center items-center min-w-[150px] min-h-[110px] relative">
+          <div
+            className={cn(
+              "flex justify-center items-center min-w-[150px] min-h-[110px] relative",
+              rightImageClassName
+            )}
+          >
             <Image
               src={rightImage}
               className="object-contain"

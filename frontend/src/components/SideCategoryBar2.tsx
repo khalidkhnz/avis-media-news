@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import Headings from "./Headings";
 import PostCard from "./PostCard";
+import Assets from "@/lib/Assets";
 
 export default function SideCategoryBar2({
   position,
@@ -21,7 +22,13 @@ export default function SideCategoryBar2({
       {Array.from({ length: 20 })
         .fill(0)
         .map((_, idx) => {
-          return <PostCard key={`Right-SideBarCard-key-${idx}`} />;
+          return (
+            <PostCard
+              rightImageClassName="min-w-[120px] min-h-[70px]"
+              rightImage={Assets.DUMMY}
+              key={`Right-SideBarCard-key-${idx}`}
+            />
+          );
         })}
     </div>
   );
