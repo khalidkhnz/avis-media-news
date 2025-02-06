@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Headings from "./Headings";
 
 export default function SideCategoryBar2({
   position,
@@ -15,32 +16,12 @@ export default function SideCategoryBar2({
         }
       )}
     >
-      <SideBarHeading />
+      <Headings>TOP NEWS</Headings>
       {Array.from({ length: 20 })
         .fill(0)
         .map((_, idx) => {
           return <SideBarCard key={`Right-SideBarCard-key-${idx}`} />;
         })}
-    </div>
-  );
-}
-
-function SideBarHeading() {
-  return (
-    <div className="flex items-center text-nowrap justify-center font-serif font-bold text-md mt-2">
-      <span className="w-[100%]  flex flex-col gap-[2px]">
-        <span className="h-[1px] w-full bg-neutral-300" />
-        <span className="h-[1px] w-full bg-neutral-300" />
-        <span className="h-[1px] w-full bg-neutral-300" />
-      </span>
-      <span className="text-[#2ea4d3]">[</span>
-      <span className="">TOP NEWS</span>
-      <span className="text-[#2ea4d3]">]</span>
-      <span className="w-[100%]  flex flex-col gap-[2px]">
-        <span className="h-[1px] w-full bg-neutral-300" />
-        <span className="h-[1px] w-full bg-neutral-300" />
-        <span className="h-[1px] w-full bg-neutral-300" />
-      </span>
     </div>
   );
 }

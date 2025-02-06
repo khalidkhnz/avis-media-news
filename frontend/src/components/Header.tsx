@@ -5,6 +5,7 @@ import WeatherHeader from "./WeatherHeader";
 import SubHeader from "./SubHeader";
 import { useSidebar } from "./Sidebar";
 import Logo from "./Logo";
+import SearchBar from "./SearchBar";
 
 export default function Header() {
   const { SidebarBurger } = useSidebar();
@@ -14,6 +15,7 @@ export default function Header() {
       <WeatherHeader />
       <div className="relative bg-gradient-to-tr text-white from-[#011E29] to-[#001F29] w-[99%] flex items-center justify-center mx-auto rounded-t-lg p-2 border-[2px] h-[120px] ">
         <SidebarBurger className="absolute left-4 top-4" />
+        <SearchBar className="absolute left-4 bottom-4" />
         <Logo />
       </div>
       <SubHeader />

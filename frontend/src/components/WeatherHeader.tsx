@@ -6,10 +6,11 @@ const WeatherHeader = () => {
     <div className="flex items-center justify-end px-4 mx-auto w-[99%] bg-[#011E29]/95 text-white rounded-b-lg h-10">
       <div className="text-sm flex gap-2 font-semibold">
         <span>
-          {new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
+          {new Date().toLocaleDateString([], {
+            weekday: "long",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
           })}
         </span>
         <Weather />
