@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import Headings from "./Headings";
+import PostCard from "./PostCard";
 
 export default function SideCategoryBar({
   position,
@@ -20,21 +21,8 @@ export default function SideCategoryBar({
       {Array.from({ length: 20 })
         .fill(0)
         .map((_, idx) => {
-          return <SideBarCard key={`Right-SideBarCard-key-${idx}`} />;
+          return <PostCard key={`Right-SideBarCard-key-${idx}`} />;
         })}
-    </div>
-  );
-}
-
-function SideBarCard() {
-  return (
-    <div className="flex cursor-pointer flex-col gap-2 leading-4">
-      <h4 className="font-bold hover:underline text-[#2ea4d3]">WORLD NEWS</h4>
-      <p className="hover:underline text-[12px] font-[600] line-clamp-2">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum,
-        sapiente?
-      </p>
-      <span className="text-neutral-500 text-[13px]">Updated 1 hour ago</span>
     </div>
   );
 }

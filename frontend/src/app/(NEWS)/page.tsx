@@ -1,3 +1,3 @@
 export default function Home() {
-  return <div className="h-[300vh] bg-white p-2 ">page </div>;
+  return <div className="bg-white p-2 h-[50vh]">PAGE</div>;
 }
