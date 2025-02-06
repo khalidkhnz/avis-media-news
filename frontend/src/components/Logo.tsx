@@ -12,7 +12,11 @@ const Logo = ({
 }) => {
   if (!alternative)
     return (
-      <div className={cn("w-[420px] relative h-[90px]", className)}>
+      <div
+        className={cn("relative", className, {
+          "w-[420px] h-[90px]": !className,
+        })}
+      >
         <Image
           className="object-contain"
           fill

@@ -14,9 +14,9 @@ export default function Header() {
     <Fragment>
       <WeatherHeader />
       <div className="relative bg-gradient-to-tr text-white from-[#011E29] to-[#001F29] w-[99%] flex items-center justify-center mx-auto rounded-t-lg p-2 border-[2px] h-[120px] ">
-        <SidebarBurger className="absolute left-4 top-4" />
-        <SearchBar className="absolute left-4 bottom-4" />
-        <Logo />
+        <SidebarBurger className="absolute left-4 bottom-4" />
+        <SearchBar className="absolute right-4 bottom-4" />
+        <Logo className="w-[240px] h-[70px] sm:w-[370px] sm:h-[75px] md:w-[420px] md:h-[90px]" />
       </div>
       <SubHeader />
       <div className="border-b-2 my-2" />
