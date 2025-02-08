@@ -14,26 +14,8 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import { AuthService, IInitialValuesType } from "@/api/auth.service";
 import { useMachine } from "@/context/machine";
-import { useRouter } from "next/navigation";
-import { useExtendedEffect } from "@/hooks/useExtendedEffect";
 
 export default function Page() {
-  const {
-    state: { auth, token },
-  } = useMachine();
-
-  const router = useRouter();
-
-  useExtendedEffect({
-    exec(finish) {
-      if (auth || token) {
-        router.push("/dashboard");
-        finish();
-      }
-    },
-    dependencies: [],
-  });
-
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">

@@ -33,6 +33,7 @@ export function Machine({ children }: IMachineProps) {
   );
 
   useSwr("current-user", async () => {
+    if (state.auth) return null;
     const { user: CURRENT_USER } = await AuthService.getCurrentUser();
     setState({ ...state, auth: CURRENT_USER });
   });
