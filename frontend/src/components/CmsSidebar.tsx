@@ -32,10 +32,10 @@ const CmsSidebar = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <CmsSidebarContext.Provider value={{}}>
-      <div className="w-full">
+      <div className="w-full flex">
         <div
           className={cn(
-            "transition-all duration-300 relative h-screen bg-neutral-800 border-r-[1px] border-purple-700 flex flex-col gap-2",
+            "transition-all duration-300 relative h-screen bg-neutral-800 border-r-[1px] border-neutral-900 flex flex-col gap-2",
             {
               "w-[300px] pr-6 p-2": isOpen,
               "w-[70px] py-2 pl-2": !isOpen,
