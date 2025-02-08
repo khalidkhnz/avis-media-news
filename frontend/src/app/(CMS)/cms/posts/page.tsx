@@ -13,8 +13,8 @@ const Page = () => {
 
   return (
     <div className="bg-neutral-700 w-full h-screen flex flex-col">
-      <div className="bg-neutral-900 px-4 text-white p-2 h-[60px] flex items-center">
-        Manage Posts
+      <div className="bg-neutral-900 px-10 text-white p-2 h-[60px] flex items-center">
+        <h1 className="text-3xl">Manage Posts</h1>
       </div>
       <div className="flex justify-end items-center bg-neutral-800 px-4 text-white p-2 h-[70px]">
         {nav.map((navItem) => (
