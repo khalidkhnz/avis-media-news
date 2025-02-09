@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { useFormik } from "formik";
 import { AuthService, IInitialValuesType } from "@/api/auth.service";
 import { useMachine } from "@/context/machine";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   return (
@@ -31,6 +32,8 @@ function AuthForm({
 }: React.ComponentPropsWithoutRef<"div">) {
   const { AUTHENTICATE } = useMachine();
 
+  const router = useRouter();
+
   const initialValues: IInitialValuesType = {
     formType: "LOGIN",
     username: "",
@@ -44,6 +47,7 @@ function AuthForm({
       const response = await AuthService.handleAuthentication(vals);
       if (response.success) {
         AUTHENTICATE(response.token);
+        router.push("/cms/dashboard");
       } else alert(response.message);
     },
   });

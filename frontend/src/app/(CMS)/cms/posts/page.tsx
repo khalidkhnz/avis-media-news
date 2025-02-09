@@ -1,18 +1,33 @@
 "use client";
 
+import { PostService } from "@/api/post.service";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import Assets from "@/lib/Assets";
 import { NotebookPen, Trash } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React from "react";
+import useSWR from "swr";
 
 const Page = () => {
-  const nav = [{ label: "Add Post", onClick: () => {} }];
+  const router = useRouter();
+
+  const nav = [
+    {
+      label: "Add Post",
+      onClick: () => router.push("/cms/editor?type=CREATE"),
+    },
+  ];
+
+  const { data, isLoading } = useSWR("posts", () => PostService.getAllPosts());
 
   return (
     <div className="bg-neutral-700 w-full h-screen flex flex-col">
+      <pre>
+        <code>{JSON.stringify(data, null, 2)}</code>
+      </pre>{" "}
       <div className="bg-neutral-900 px-10 text-white p-2 h-[60px] flex items-center">
         <h1 className="text-3xl">Manage Posts</h1>
       </div>

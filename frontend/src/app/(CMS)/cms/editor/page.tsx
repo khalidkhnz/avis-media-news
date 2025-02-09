@@ -25,6 +25,7 @@ export default function Home() {
     initialValues: {
       title: "",
       description: "",
+      thumbnail: "",
       delta: "",
     },
     async onSubmit(values) {
@@ -80,6 +81,13 @@ export default function Home() {
           onBlur={fk.handleBlur}
           name="title"
           placeholder="Post Heading"
+        />
+        <Input
+          value={fk.values.thumbnail}
+          onChange={fk.handleChange}
+          onBlur={fk.handleBlur}
+          name="thumbnail"
+          placeholder="Thumbnail URL"
         />
         <Textarea
           value={fk.values.description}
