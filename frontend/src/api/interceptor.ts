@@ -2,7 +2,7 @@ import { CONFIG } from "@/lib/config";
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: CONFIG.API_BASE_URL,
+  baseURL: CONFIG.API_BASE_URL || "https://api.khalidkhnz.in/api/v1",
 });
 
 API.interceptors.request.use((config) => {
