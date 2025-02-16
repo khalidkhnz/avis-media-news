@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Delta } from "quill";
 import { parseQuillDelta, TextRun } from "quilljs-parser";
 import React from "react";

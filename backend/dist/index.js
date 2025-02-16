@@ -60,7 +60,7 @@ class Server {
     }
     listenAndServer(server) {
         this.connectToDB();
-        server.listen(4000, () => console.log("Server running on port 4000"));
+        server.listen(config_1.default.PORT, () => console.log("Server running on port 4000"));
     }
 }
 new Server();
