@@ -10,4 +10,5 @@ export default {
   JWT_SECRET,
   API_VER_PREFIX,
   MONGO_URI,
+  PORT: 4000,
 };

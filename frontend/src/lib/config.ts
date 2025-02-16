@@ -1,3 +1,4 @@
 export const CONFIG = {
-  API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL || "/api/v1",
+  API_BASE_URL:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "https://api.khalidkhnz.in/api/v1",
 };
