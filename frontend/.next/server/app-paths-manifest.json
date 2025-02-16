@@ -1,0 +1,12 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/(CMS)/login/page": "app/(CMS)/login/page.js",
+  "/(NEWS)/page": "app/(NEWS)/page.js",
+  "/(NEWS)/post/[postId]/page": "app/(NEWS)/post/[postId]/page.js",
+  "/(CMS)/cms/tags/page": "app/(CMS)/cms/tags/page.js",
+  "/(CMS)/cms/categories/page": "app/(CMS)/cms/categories/page.js",
+  "/(CMS)/cms/posts/page": "app/(CMS)/cms/posts/page.js",
+  "/(CMS)/cms/dashboard/page": "app/(CMS)/cms/dashboard/page.js",
+  "/(CMS)/cms/editor/page": "app/(CMS)/cms/editor/page.js"
+}

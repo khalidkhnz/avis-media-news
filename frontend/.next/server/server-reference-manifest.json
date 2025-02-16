@@ -1,0 +1,1 @@
+{"node":{"7f1a8b847af34d78a85df2e32f5335a37fb8759c57":{"workers":{"app/(NEWS)/page":{"moduleId":"99708","async":false},"app/(NEWS)/post/[postId]/page":{"moduleId":"99708","async":false}},"layer":{"app/(NEWS)/page":"action-browser","app/(NEWS)/post/[postId]/page":"action-browser"}}},"edge":{},"encryptionKey":"IC3hFO5RIK1rHIWDN+D+B/zb0LwHPaZiv7ejfE4kSv8="}

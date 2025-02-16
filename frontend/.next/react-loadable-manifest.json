@@ -1,0 +1,33 @@
+{
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_app": {
+    "id": 35203,
+    "files": [
+      "static/chunks/203.215f7ebb412294c3.js"
+    ]
+  },
+  "..\\node_modules\\next\\dist\\client\\index.js -> ../pages/_error": {
+    "id": 86218,
+    "files": [
+      "static/chunks/218.ee5bb437b51df9be.js"
+    ]
+  },
+  "app\\(CMS)\\cms\\editor\\page.tsx -> @/components/QuillEditor": {
+    "id": 60259,
+    "files": [
+      "static/css/e9df80dd18a0c57e.css",
+      "static/chunks/268.fecd29fd8193e55c.js",
+      "static/chunks/259.171be61bbda1a0d1.js"
+    ]
+  },
+  "app\\(CMS)\\cms\\posts\\page.tsx -> ./Editor": {
+    "id": 65710,
+    "files": [
+      "static/chunks/181-1308024cb5b5bb3a.js",
+      "static/chunks/749-52ff00a91e7c98a7.js",
+      "static/chunks/304-2951a0cbd8e0f851.js",
+      "static/chunks/651-13b0627f23b6f4fe.js",
+      "static/chunks/860-3c93e64f170756bd.js",
+      "static/chunks/710.42e0d7319cac5e66.js"
+    ]
+  }
+}
