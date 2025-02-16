@@ -61,7 +61,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
   // AUTO CLOSE WHEN CLICK OUTSIDE
   const SidebarRef = useRef(null);
   const SidebarBurgerRef = useRef(null);
-  useDetectOutsideClick(SidebarRef, close, SidebarBurgerRef);
+  useDetectOutsideClick<any>(SidebarRef, close, SidebarBurgerRef);
 
   function SidebarBurger({ className }: { className?: string }) {
     return (
